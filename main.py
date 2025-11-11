@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from data.WebhookBody import PayLoad
 from services import message_service
-import uvicorn
 
 app = FastAPI()
 app.add_middleware(
