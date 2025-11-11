@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from openai import OpenAI
-
+from data.WebhookBody import PayLoad
+from services import message_service
+import uvicorn
 
 app = FastAPI()
 app.add_middleware(
@@ -21,3 +22,10 @@ async def root():
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
 
+@app.post("/callback")
+async def sign(payload: PayLoad):
+    res = message_service.deal_callback(payload)
+    return res
+
+if __name__ == '__main__':
+    uvicorn.run('main:app')

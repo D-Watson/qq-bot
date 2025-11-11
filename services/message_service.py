@@ -1,25 +1,25 @@
-import zai
-from zai import ZhipuAiClient
-print(zai.__version__)
+from data.WebhookBody import *
+from data.Enums import *
+from utils.secret_util import *
 
 
-client = ZhipuAiClient(
-    api_key="3e0e41c3dd96436f8822f548ea360144.FWv8cCeCjGBYBG1e"
-)
-response = client.chat.completions.create(
-    model="glm-4.6",
-    messages=[
-        {
-            "role": "system",
-            "content": "你是一个有用的AI助手。"
-        },
-        {
-            "role": "user",
-            "content": "你好，请介绍一下自己。"
-        }
-    ],
-    temperature=0.6
-)
+def deal_callback(payload: PayLoad):
+    match payload.op:
+        case WebhookOpCode.callback_verify.value:
+            return verify_callback_sign(payload.d)
+        case WebhookOpCode.dispatch.value:
+            return None
 
-# 获取回复
-print(response.choices[0].message.content)
+
+# 首次配置回调地址时候平台用来校验签名
+def verify_callback_sign(d):
+    token = d.get("plain_token")
+    event_ts = d.get("event_ts")
+    secret = 'VxPrJlEhAd6Z2VzTxRvPtOtOtOtOuQwS'
+    private_key, public_key, seed = generate_ed25519_keypair_from_secret(secret)
+    sign = sign_validation_payload(private_key, event_ts, token)
+    res = ValidationRes(
+        plain_token=token,
+        signature=sign
+    )
+    return res
