@@ -1,9 +1,9 @@
 # 明确包含 zai 包
-zai>=0.0.2
+zai
 
 # 核心依赖
 fastapi
-pydantic==2.5.0
+pydantic
 
 # 配置管理
 python-dotenv
@@ -14,3 +14,5 @@ cryptography
 
 # HTTP 客户端
 requests
+
+numpy
