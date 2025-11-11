@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+# import uvicorn
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from data.WebhookBody import PayLoad
 from services import message_service
+
 
 app = FastAPI()
 app.add_middleware(
@@ -11,6 +13,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_token_to_response_headers(request: Request, call_next):
+    # 处理请求
+    response = await call_next(request)
+
+    # 生成或获取 token
+    token = message_service.get_access_token()
+
+    # 添加自定义响应头
+    response.headers["Authorization"] = "QQBot "+token
+    return response
+
 
 @app.get("/")
 async def root():
@@ -26,3 +42,6 @@ async def sign(payload: PayLoad):
     res = message_service.deal_callback(payload)
     return res
 
+#
+# if __name__ == '__main__':
+#     uvicorn.run('main:app')
