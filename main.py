@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from data.WebhookBody import PayLoad
@@ -41,3 +42,5 @@ async def sign(payload: PayLoad):
     res = message_service.deal_callback(payload)
     return res
 
+if __name__ == '__main__':
+    uvicorn.run('main:app')
